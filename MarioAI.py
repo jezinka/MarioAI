@@ -37,11 +37,25 @@ def learn_model():
     model.learn(total_timesteps=1000000, callback=callback)
 
 
+def continue_learning():
+    model_path = f"train/10_multi_model_30000_steps"
+    log_path = f"logs/"
+    model = PPO.load(model_path, tensorboard_log=log_path)
+    num_cpu = 10  # Number of processes to use
+    play_env = DummyVecEnv([create_env() for _ in range(num_cpu)])
+    play_env = VecFrameStack(play_env, 4, channels_order='last')
+    model.set_env(play_env)
+    callback = CheckpointCallback(
+        save_freq=1000,
+        save_path="./train/",
+        name_prefix=str(num_cpu) + "_multi_model"
+    )
+    model.learn(total_timesteps=1000000, callback=callback)
+
+
 def play_model():
-    play_env = gym_super_mario_bros.make('SuperMarioBros-v0')
-    play_env = JoypadSpace(play_env, SIMPLE_MOVEMENT)
-    play_env = GrayScaleObservation(play_env, keep_dim=True)
-    play_env = DummyVecEnv([lambda: play_env])
+    num_cpu = 4  # Number of processes to use
+    play_env = DummyVecEnv([create_env() for _ in range(num_cpu)])
     play_env = VecFrameStack(play_env, 4, channels_order='last')
     model = create_model(play_env)
     model.load('./train/10_multi_model_20000_steps')
@@ -54,4 +68,4 @@ def play_model():
 
 if __name__ == '__main__':
     # learn_model()
-    play_model()
+    continue_learning()
