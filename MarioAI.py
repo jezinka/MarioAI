@@ -4,9 +4,7 @@ from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 from nes_py.wrappers import JoypadSpace
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
-from stable_baselines3.common.vec_env import VecFrameStack, DummyVecEnv, SubprocVecEnv
-
-from callback import TrainAndLoggingCallback
+from stable_baselines3.common.vec_env import VecFrameStack, DummyVecEnv
 
 
 def create_env():
