@@ -36,7 +36,7 @@ def learn_model():
 
 
 def continue_learning():
-    model_path = f"train/10_multi_model_30000_steps"
+    model_path = f"train/10_multi_model_80000_steps"
     log_path = f"logs/"
     model = PPO.load(model_path, tensorboard_log=log_path)
     num_cpu = 10  # Number of processes to use
@@ -48,15 +48,15 @@ def continue_learning():
         save_path="./train/",
         name_prefix=str(num_cpu) + "_multi_model"
     )
-    model.learn(total_timesteps=1000000, callback=callback)
+    model.learn(total_timesteps=1000000, callback=callback, reset_num_timesteps=False)
 
 
 def play_model():
-    num_cpu = 4  # Number of processes to use
+    num_cpu = 1  # Number of processes to use
     play_env = DummyVecEnv([create_env() for _ in range(num_cpu)])
     play_env = VecFrameStack(play_env, 4, channels_order='last')
     model = create_model(play_env)
-    model.load('./train/10_multi_model_20000_steps')
+    model.load('./train/10_multi_model_80000_steps')
     state = play_env.reset()
     while True:
         action, _ = model.predict(state)
@@ -66,4 +66,5 @@ def play_model():
 
 if __name__ == '__main__':
     # learn_model()
-    continue_learning()
+    # continue_learning()
+    play_model()
